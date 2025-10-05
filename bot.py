@@ -2,11 +2,12 @@ from flask import Flask, request
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, Bot
 from telegram.ext import Dispatcher, CommandHandler, CallbackQueryHandler, CallbackContext
 import os
+import requests  # для установки webhook через HTTP
 
 # --- Словарь для хранения очков теста ---
 user_scores = {}
 
-# --- Токен из Secrets Replit ---
+# --- Токен из Secrets Render ---
 TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot, None)
@@ -143,4 +144,10 @@ def index():
     return "Bot is running!"
 
 if __name__ == "__main__":
+    # --- Установка webhook автоматически ---
+    WEBHOOK_URL = f"https://wq-bot3.onrender.com/{TOKEN}"
+    r = requests.get(f"https://api.telegram.org/bot{TOKEN}/setWebhook?url={WEBHOOK_URL}")
+    print("Webhook set result:", r.json())
+
+    # --- Запуск Flask ---
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
